@@ -1,8 +1,10 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
+import Footer from './components/layout/Footer';
 import Products from './pages/Products';
 import Cart from './pages/Cart';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import { CartProvider } from './context/CartContext';
 
 function App() {
@@ -13,6 +15,7 @@ function App() {
       <Routes>
         {/* Pública */}
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* Privadas */}
         <Route
@@ -26,8 +29,11 @@ function App() {
               </Routes>
             </CartProvider>
           }
-        />
+        />        
       </Routes>
+
+      <Footer />
+      
     </BrowserRouter>
   );
 }
