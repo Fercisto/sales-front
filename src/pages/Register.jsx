@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom"
 import { useState } from "react";
+import Alert from "../components/common/Alert";
+import { useAlert } from "../hooks/useAlert";
 
 export default function Register() {
-
       
   const [formData, setFormData] = useState({
     nombre: '',
@@ -11,8 +12,24 @@ export default function Register() {
     rol: 'comprador'
   });
 
+  const [confirmacionPassword, setConfirmacionPassword] = useState('');
+
+  const { alerta, mostrarAlerta } = useAlert();
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    const noEsValido = Object.values(formData).includes('');
+
+    if(confirmacionPassword.trim() !== formData.password.trim()) {
+      mostrarAlerta('Las contraseñas deben de ser iguales', 'error');
+      return;
+    }
+
+    if(noEsValido) {
+      mostrarAlerta('Completa todos los campos', 'error');
+      return;
+    }
 
     const response = await fetch('http://localhost/sales-api/public/api/usuarios', {
       method: 'POST',
@@ -24,13 +41,20 @@ export default function Register() {
 
     const data = await response.json()
 
-  } 
+    if(data) {
+      mostrarAlerta('success', 'Cuenta creada correctamente');
+      setTimeout(() => {
+        // Redirigir
+      }, 3500);
+    }
+
+  }
 
   const handleChange = e => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
-    })
+    });
   }
 
   return (
@@ -39,6 +63,8 @@ export default function Register() {
         <h2 className="font-black text-2xl text-center mb-5">
             Crear Cuenta
         </h2>
+
+        {alerta.mostrar && <Alert tipo={alerta.tipo} mensaje={alerta.mensaje} />}
 
         <form className="flex flex-col space-y-5 w-full" onSubmit={handleSubmit}>
           <input
@@ -69,6 +95,8 @@ export default function Register() {
             type="password"
             className="bg-gray-50 border-gray-300 p-2 border rounded focus:outline-none"
             placeholder="Confirma tu Password"
+            name="confirmacionPassword"
+            onChange={e => setConfirmacionPassword(e.target.value)}
           />
 
           <select

@@ -5,35 +5,42 @@ import Products from './pages/Products';
 import Cart from './pages/Cart';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ProductDetail from './pages/ProductDetail';
 import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/routes/ProtectedRoute';
 
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
+      <AuthProvider>
+        <Navbar />
 
-      <Routes>
-        {/* Pública */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Routes>
+          {/* Rutas públicas */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-        {/* Privadas */}
-        <Route
-          path="/*"
-          element={
-            <CartProvider>
-              <Routes>
-                <Route path="/" element={<Products />} />
-                <Route path="/productos" element={<Products />} />
-                <Route path="/cart" element={<Cart />} />
-              </Routes>
-            </CartProvider>
-          }
-        />        
-      </Routes>
+          {/* Rutas privadas - requieren autenticación */}
+          <Route
+            path="/*"
+            element={
+              <ProtectedRoute>
+                <CartProvider>
+                  <Routes>
+                    <Route path="/" element={<Products />} />
+                    <Route path="/productos" element={<Products />} />
+                    <Route path="/productos/:id" element={<ProductDetail />} />
+                    <Route path="/cart" element={<Cart />} />
+                  </Routes>
+                </CartProvider>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
 
-      <Footer />
-      
+        <Footer />
+      </AuthProvider>
     </BrowserRouter>
   );
 }
