@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import ProductCard from "../components/productos/ProductCard";
+import ProductDetailView from "../components/productos/ProductDetailView";
 
 export default function ProductDetail() {
 
@@ -18,12 +18,13 @@ export default function ProductDetail() {
                 console.log(error);
             }
         }
+
         consultarProducto();
         
     }, []);
 
     return (
-        <ProductCard 
+        <ProductDetailView 
             producto={producto}
         />
     )

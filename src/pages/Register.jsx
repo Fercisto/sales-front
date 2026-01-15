@@ -42,7 +42,7 @@ export default function Register() {
     const data = await response.json()
 
     if(data) {
-      mostrarAlerta('success', 'Cuenta creada correctamente');
+      mostrarAlerta('Cuenta creada correctamente', 'success');
       setTimeout(() => {
         // Redirigir
       }, 3500);

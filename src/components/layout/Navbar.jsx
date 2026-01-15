@@ -12,7 +12,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="border-b border-gray-200 backdrop-blur-sm bg-white">
+    <nav className="border-b border-gray-200 backdrop-blur-sm bg-white mb-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
@@ -26,7 +26,7 @@ export default function Navbar() {
                   Hola, {usuario?.nombre}
                 </span>
                 <Link
-                  to={'/cart'}
+                  to={'/carrito'}
                   className="relative inline-flex items-center gap-2 text-indigo-600 font-medium px-4 py-2.5 rounded-lg bg-indigo-50 group hover:bg-indigo-100"
                 >
                   <FontAwesomeIcon

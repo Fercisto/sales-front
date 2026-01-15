@@ -1,41 +1,7 @@
 import { Link } from "react-router-dom"
+import { getInitials, getColorFromName, formatPrice } from "../../utils/productUtils"
 
 export default function ProductList({productos}) {
-
-  console.log(productos)
-  // Función para obtener las iniciales del producto
-  const getInitials = (nombre) => {
-    return nombre
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
-  }
-
-  // Función para generar un color basado en el nombre
-  const getColorFromName = (nombre) => {
-    const colors = [
-      'from-blue-500 to-blue-600',
-      'from-purple-500 to-purple-600',
-      'from-green-500 to-green-600',
-      'from-orange-500 to-orange-600',
-      'from-pink-500 to-pink-600',
-      'from-indigo-500 to-indigo-600',
-      'from-teal-500 to-teal-600',
-      'from-red-500 to-red-600',
-    ]
-    const index = nombre.length % colors.length
-    return colors[index]
-  }
-
-  // Función para formatear el precio
-  const formatPrice = (precio) => {
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'MXN'
-    }).format(precio)
-  }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
