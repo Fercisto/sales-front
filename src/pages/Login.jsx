@@ -43,7 +43,7 @@ export default function Login() {
         if (data.usuario.rol === 'vendedor') {
           navigate('/dashboard-vendedor');
         } else {
-          navigate('/dashboard');
+          navigate('/');
         }
       }
     } catch (error) {
