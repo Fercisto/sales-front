@@ -24,7 +24,7 @@ export default function ProductList({productos}) {
                   : 'bg-red-100 text-red-800'
               }`}>
                 Stock: {producto.stock}
-              </span>
+              </span> 
             </div>
           </div>
 
@@ -42,13 +42,6 @@ export default function ProductList({productos}) {
                 <p className="text-xs text-gray-500 mb-1">Precio</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {formatPrice(producto.precio)}
-                </p>
-              </div>
-
-              <div className="text-right">
-                <p className="text-xs text-gray-500 mb-1">Vendedor:</p>
-                <p className="text-sm font-semibold text-gray-700">
-                  {producto.vendedor_nombre}
                 </p>
               </div>
             </div>

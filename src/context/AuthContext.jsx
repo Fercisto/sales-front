@@ -36,17 +36,11 @@ export const AuthProvider = ({ children }) => {
     return usuario !== null;
   };
 
-  // Verificar si el usuario tiene un rol específico
-  const tieneRol = (rol) => {
-    return usuario?.rol === rol;
-  };
-
   const value = {
     usuario,
     login,
     logout,
     estaAutenticado,
-    tieneRol,
     cargando
   };
 

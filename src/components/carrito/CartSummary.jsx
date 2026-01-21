@@ -1,6 +1,40 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useAuth } from "../../hooks/useAuth";
 
-export default function CartSummary({ totalItems, total, onClearCart }) {
+export default function CartSummary({ totalItems, total, onClearCart, cart }) {
+
+  const { usuario } = useAuth();
+  
+  if(!usuario) {
+    return;
+  }
+
+  const handleRealizarPedido = () => {
+    const pedido = {
+      comprador_id: usuario.id,
+      productos: cart.items,
+    };
+
+    realizarPedido(pedido);
+  };
+
+  const realizarPedido = async (pedido) => {
+    console.log(pedido);
+
+    try {
+      const response = await fetch("http://localhost/sales-api/public/api/pedidos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(pedido),
+      });
+
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow p-6 sticky top-6">
       <h2 className="text-xl font-bold mb-4">Resumen del Pedido</h2>
@@ -23,12 +57,12 @@ export default function CartSummary({ totalItems, total, onClearCart }) {
         </div>
       </div>
 
-      <Link
+      <button
         className="block text-center w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded mb-3 cursor-pointer"
-        to={'/pago'}
+        onClick={handleRealizarPedido}
       >
-        Proceder al Pago
-      </Link>
+        Realizar Pedido
+      </button>
 
       <button
         className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 rounded cursor-pointer"

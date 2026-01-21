@@ -99,16 +99,6 @@ export default function Register() {
             onChange={e => setConfirmacionPassword(e.target.value)}
           />
 
-          <select
-            className="bg-gray-50 p-2 border border-gray-300 rounded focus:outline-none"
-            defaultValue=""
-            onChange={handleChange}
-            name="rol"
-          >
-            <option value="" disabled>Selecciona tu Rol</option>
-            <option value="comprador">Comprador</option>
-            <option value="vendedor">Vendedor</option>
-          </select>
 
           <input
             type="submit"

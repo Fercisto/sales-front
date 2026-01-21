@@ -40,11 +40,7 @@ export default function Login() {
       } else {
         // Guardar los datos del usuario en el contexto y localStorage
         login(data.usuario);
-        if (data.usuario.rol === 'vendedor') {
-          navigate('/dashboard-vendedor');
-        } else {
-          navigate('/');
-        }
+        navigate('/');
       }
     } catch (error) {
       mostrarAlerta('Error de conexión con el servidor', 'error');

@@ -185,6 +185,7 @@ export default function Cart() {
               totalItems={totalItems}
               total={total}
               onClearCart={handleVaciarCarrito}
+              cart={cart}
             />
           </div>
         </div>
