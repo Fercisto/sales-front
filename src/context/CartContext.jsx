@@ -10,8 +10,19 @@ export const CartProvider = ({ children }) => {
     total_items: 0,
   });
 
+  const vaciarCarrito = async (usuarioId) => {
+    try {
+      await fetch(`http://localhost/sales-api/public/carrito/${usuarioId}/clear`, {
+        method: 'DELETE'
+      });
+      setCart({ items: [], total: 0, total_items: 0 });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <CartContext.Provider value={{ cart, setCart }}>
+    <CartContext.Provider value={{ cart, setCart, vaciarCarrito }}>
       {children}
     </CartContext.Provider>
   );

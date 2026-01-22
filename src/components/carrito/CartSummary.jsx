@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { useCart } from "../../context/CartContext";
 
 export default function CartSummary({ totalItems, total, onClearCart, cart }) {
 
   const { usuario } = useAuth();
-  
+  const { vaciarCarrito } = useCart();
+  const navigate = useNavigate();
+
   if(!usuario) {
     return;
   }
@@ -19,8 +22,6 @@ export default function CartSummary({ totalItems, total, onClearCart, cart }) {
   };
 
   const realizarPedido = async (pedido) => {
-    console.log(pedido);
-
     try {
       const response = await fetch("http://localhost/sales-api/public/api/pedidos", {
         method: "POST",
@@ -29,7 +30,12 @@ export default function CartSummary({ totalItems, total, onClearCart, cart }) {
       });
 
       const data = await response.json();
-      console.log(data);
+      
+      if(!data.error) {
+        await vaciarCarrito(usuario.id);
+        navigate('/pedidos');
+      }
+
     } catch (error) {
       console.error(error);
     }

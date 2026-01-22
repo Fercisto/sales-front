@@ -6,6 +6,7 @@ import Cart from './pages/Cart';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ProductDetail from './pages/ProductDetail';
+import Orders from './pages/Orders';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/routes/ProtectedRoute';
@@ -30,6 +31,7 @@ function App() {
                   <Routes>
                     <Route path="/" element={<Products />} />
                     <Route path="/productos" element={<Products />} />
+                    <Route path="/pedidos" element={<Orders />} />
                     <Route path="/productos/:id" element={<ProductDetail />} />
                     <Route path="/carrito" element={<Cart />} />
                   </Routes>

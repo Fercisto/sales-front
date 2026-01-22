@@ -8,7 +8,7 @@ export default function Cart() {
 
   const { usuario } = useAuth();
   
-  const {cart, setCart} = useCart();
+  const { cart, setCart, vaciarCarrito } = useCart();
 
   if(!usuario) {
     return;
@@ -74,21 +74,7 @@ export default function Cart() {
     }
   }
 
-  const handleVaciarCarrito = async () => {
-    try {
-      await fetch(`http://localhost/sales-api/public/carrito/${usuario.id}/clear`, {
-        method: 'DELETE'
-      });
-
-      setCart({
-        items: [],
-        total: 0,
-        total_items: 0,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  const handleVaciarCarrito = () => vaciarCarrito(usuario.id);
 
   const handleIncrementarCantidad = (item) => {
     const carritoActualizado = cart.items.map(currentItem => {

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import Logo from "../common/Logo"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faShoppingCart } from '@fortawesome/free-solid-svg-icons'
+import { faShoppingCart, faClipboardList } from '@fortawesome/free-solid-svg-icons'
 import { useAuth } from "../../hooks/useAuth"
 
 export default function Navbar() {
@@ -25,6 +25,16 @@ export default function Navbar() {
                 <span className="text-gray-700 font-medium">
                   Hola, {usuario?.nombre}
                 </span>
+                <Link
+                  to={'/pedidos'}
+                  className="relative inline-flex items-center gap-2 text-indigo-600 font-medium px-4 py-2.5 rounded-lg bg-indigo-50 group hover:bg-indigo-100"
+                >
+                  <FontAwesomeIcon
+                    icon={faClipboardList}
+                    className="text-lg"
+                  />
+                  <span>Pedidos</span>
+                </Link>
                 <Link
                   to={'/carrito'}
                   className="relative inline-flex items-center gap-2 text-indigo-600 font-medium px-4 py-2.5 rounded-lg bg-indigo-50 group hover:bg-indigo-100"
