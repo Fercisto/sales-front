@@ -5,6 +5,7 @@ export default function Orders() {
   const { usuario } = useAuth();
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cancelando, setCancelando] = useState(null);
 
   useEffect(() => {
     const cargarPedidos = async () => {
@@ -43,6 +44,30 @@ export default function Orders() {
       month: 'long',
       day: 'numeric'
     });
+  };
+
+  const cancelarPedido = async (pedidoId) => {
+    setCancelando(pedidoId);
+    try {
+      const response = await fetch(
+        `http://localhost/sales-api/public/pedidos/${pedidoId}/cancelar`,
+        { method: 'PATCH' }
+      );
+      const data = await response.json();
+
+      if (response.ok) {
+        setPedidos(pedidos.map(p =>
+          p.id === pedidoId ? { ...p, estatus: 'CANCELADO' } : p
+        ));
+      } else {
+        alert(data.error || 'Error al cancelar');
+      }
+    } catch (error) {
+      console.log(error);
+      alert('Error al cancelar el pedido');
+    } finally {
+      setCancelando(null);
+    }
   };
 
   if (!usuario) {
@@ -125,17 +150,31 @@ export default function Orders() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${getEstatusColor(
-                        pedido.estatus
-                      )}`}
-                    >
-                      {pedido.estatus}
-                    </span>
-                    <p className="text-xl font-bold text-indigo-600">
-                      ${pedido.total?.toFixed(2)}
-                    </p>
+                  <div className="flex flex-col items-end gap-4">
+                    <div className="flex items-center gap-4">
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${getEstatusColor(
+                          pedido.estatus?.toLowerCase()
+                        )}`}
+                      >
+                        {pedido.estatus}
+                      </span>
+                      <p className="text-xl font-bold text-indigo-600">
+                        ${pedido.total?.toFixed(2)}
+                      </p>
+                    </div>
+                    
+                      {pedido.estatus?.toLowerCase() !== 'cancelado' && (
+                        <div>
+                          <button
+                            onClick={() => cancelarPedido(pedido.id)}
+                            disabled={cancelando === pedido.id}
+                            className="px-3 py-1 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                          >
+                            {cancelando === pedido.id ? 'Cancelando...' : 'Cancelar'}
+                          </button>
+                        </div>
+                      )}
                   </div>
                 </div>
               </div>
