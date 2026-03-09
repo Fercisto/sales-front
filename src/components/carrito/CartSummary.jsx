@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useCart } from "../../context/CartContext";
@@ -7,37 +8,39 @@ export default function CartSummary({ totalItems, total, onClearCart, cart }) {
   const { usuario } = useAuth();
   const { vaciarCarrito } = useCart();
   const navigate = useNavigate();
+  const [procesando, setProcesando] = useState(false);
+  const [error, setError] = useState(null);
 
   if(!usuario) {
     return;
   }
 
-  const handleRealizarPedido = () => {
-    const pedido = {
-      comprador_id: usuario.id,
-      productos: cart.items,
-    };
+  const handleRealizarPedido = async () => {
+    setError(null);
+    setProcesando(true);
 
-    realizarPedido(pedido);
-  };
-
-  const realizarPedido = async (pedido) => {
     try {
-      const response = await fetch("http://localhost/sales-api/public/api/pedidos", {
+      const response = await fetch("http://localhost/sales-api/public/pedidos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(pedido),
+        body: JSON.stringify({
+          comprador_id: usuario.id,
+          productos: cart.items,
+        }),
       });
 
       const data = await response.json();
-      
-      if(!data.error) {
+
+      if (response.ok) {
         await vaciarCarrito(usuario.id);
         navigate('/pedidos');
+      } else {
+        setError(data.error || 'No se pudo confirmar el pedido');
       }
-
     } catch (error) {
-      console.error(error);
+      setError('Error de conexión. Intenta de nuevo.');
+    } finally {
+      setProcesando(false);
     }
   };
 
@@ -63,16 +66,24 @@ export default function CartSummary({ totalItems, total, onClearCart, cart }) {
         </div>
       </div>
 
+      {error && (
+        <div className="mb-3 p-3 bg-red-100 text-red-700 text-sm rounded">
+          {error}
+        </div>
+      )}
+
       <button
-        className="block text-center w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded mb-3 cursor-pointer"
+        className="block text-center w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded mb-3 cursor-pointer"
         onClick={handleRealizarPedido}
+        disabled={procesando}
       >
-        Realizar Pedido
+        {procesando ? 'Confirmando...' : 'Realizar Pedido'}
       </button>
 
       <button
-        className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 rounded cursor-pointer"
+        className="w-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 text-gray-700 font-semibold py-2 rounded cursor-pointer"
         onClick={onClearCart}
+        disabled={procesando}
       >
         Vaciar Carrito
       </button>

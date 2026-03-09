@@ -15,8 +15,16 @@ export default function Orders() {
         const response = await fetch(
           `http://localhost/sales-api/public/pedidos?usuario_id=${usuario.id}`
         );
-        const data = await response.json();
-        setPedidos(data);
+        const lista = await response.json();
+
+        const detalles = await Promise.all(
+          lista.map(p =>
+            fetch(`http://localhost/sales-api/public/pedidos/${p.id}`)
+              .then(r => r.json())
+          )
+        );
+
+        setPedidos(detalles);
       } catch (error) {
         console.log(error);
       } finally {
@@ -120,64 +128,71 @@ export default function Orders() {
       ) : (
         <div className="space-y-4">
           {pedidos.map((pedido) => (
-            <div
-              key={pedido.id}
-              className="bg-white rounded-lg shadow"
-            >
-              <div className="p-6">
+            <div key={pedido.id} className="bg-white rounded-lg shadow">
+
+              {/* Encabezado */}
+              <div className="p-6 pb-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex items-center gap-4">
                     <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full p-3">
-                      <svg
-                        className="h-6 w-6 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                        />
+                      <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                       </svg>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Pedido #{pedido.id}</p>
-                      <p className="font-semibold text-gray-900">
-                        {formatearFecha(pedido.fecha)}
-                      </p>
+                      <p className="font-semibold text-gray-900">{formatearFecha(pedido.fecha)}</p>
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-end gap-4">
-                    <div className="flex items-center gap-4">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${getEstatusColor(
-                          pedido.estatus?.toLowerCase()
-                        )}`}
+                  <div className="flex items-center gap-4">
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${getEstatusColor(pedido.estatus?.toLowerCase())}`}>
+                      {pedido.estatus}
+                    </span>
+                    <p className="text-xl font-bold text-indigo-600">${pedido.total?.toFixed(2)}</p>
+                    {pedido.estatus?.toLowerCase() !== 'cancelado' && (
+                      <button
+                        onClick={() => cancelarPedido(pedido.id)}
+                        disabled={cancelando === pedido.id}
+                        className="px-3 py-1 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                       >
-                        {pedido.estatus}
-                      </span>
-                      <p className="text-xl font-bold text-indigo-600">
-                        ${pedido.total?.toFixed(2)}
-                      </p>
-                    </div>
-                    
-                      {pedido.estatus?.toLowerCase() !== 'cancelado' && (
-                        <div>
-                          <button
-                            onClick={() => cancelarPedido(pedido.id)}
-                            disabled={cancelando === pedido.id}
-                            className="px-3 py-1 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                          >
-                            {cancelando === pedido.id ? 'Cancelando...' : 'Cancelar'}
-                          </button>
-                        </div>
-                      )}
+                        {cancelando === pedido.id ? 'Cancelando...' : 'Cancelar'}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
+
+              {/* Productos */}
+              <div className="border-t border-gray-100 px-6 pb-6">
+                <table className="w-full mt-4 text-sm">
+                  <thead>
+                    <tr className="text-left text-gray-500 border-b border-gray-100">
+                      <th className="pb-2 font-medium">Producto</th>
+                      <th className="pb-2 font-medium text-center">Cantidad</th>
+                      <th className="pb-2 font-medium text-right">Precio unitario</th>
+                      <th className="pb-2 font-medium text-right">Subtotal</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pedido.productos?.map((prod) => (
+                      <tr key={prod.id} className="border-b border-gray-50">
+                        <td className="py-2 text-gray-800">{prod.nombre}</td>
+                        <td className="py-2 text-center text-gray-600">{prod.cantidad}</td>
+                        <td className="py-2 text-right text-gray-600">${prod.precio_unitario?.toFixed(2)}</td>
+                        <td className="py-2 text-right font-medium text-gray-800">${prod.subtotal?.toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colSpan={3} className="pt-3 text-right font-semibold text-gray-700">Total:</td>
+                      <td className="pt-3 text-right font-bold text-indigo-600">${pedido.total?.toFixed(2)}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
             </div>
           ))}
         </div>
@@ -192,7 +207,7 @@ export default function Orders() {
             <p className="text-gray-600">
               Total gastado:{' '}
               <span className="font-bold text-indigo-600">
-                ${pedidos.reduce((acc, p) => acc + (p.total || 0), 0).toFixed(2)}
+                ${pedidos.reduce((acc, p) => p.estatus?.toLowerCase() !== 'cancelado' ? acc + (p.total || 0) : acc, 0).toFixed(2)}
               </span>
             </p>
           </div>
