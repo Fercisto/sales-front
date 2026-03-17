@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import ProductDetail from './pages/ProductDetail';
 import Orders from './pages/Orders';
+import AdminDashboard from './pages/admin/AdminDashboard';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/routes/ProtectedRoute';
@@ -21,6 +22,16 @@ function App() {
           {/* Rutas públicas */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+
+          {/* Ruta admin */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute rolesPermitidos={['admin']}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Rutas privadas - requieren autenticación */}
           <Route

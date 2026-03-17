@@ -40,7 +40,7 @@ export default function Login() {
       } else {
         // Guardar los datos del usuario en el contexto y localStorage
         login(data.usuario);
-        navigate('/');
+        navigate(data.usuario.rol === 'admin' ? '/admin' : '/');
       }
     } catch (error) {
       mostrarAlerta('Error de conexión con el servidor', 'error');

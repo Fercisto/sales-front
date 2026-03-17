@@ -54,11 +54,33 @@ export default function Orders() {
     });
   };
 
-  const cancelarPedido = async (pedidoId) => {
+  const cancelarPedido = async (pedidoId, estatusPedido) => {
     setCancelando(pedidoId);
     try {
+      const API = 'http://localhost/sales-api/public';
+
+      // Si el pedido está pagado, primero reembolsar
+      if (estatusPedido?.toLowerCase() === 'pagado') {
+        const pagosRes = await fetch(`${API}/pagos/${pedidoId}/pedido`);
+        const pagosData = await pagosRes.json();
+        const pagoAprobado = pagosData.pagos?.find(p => p.estatus === 'aprobado');
+
+        if (pagoAprobado) {
+          const refundRes = await fetch(`${API}/pagos/${pagoAprobado.id}/reembolsar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          });
+          if (!refundRes.ok) {
+            const err = await refundRes.json();
+            alert('Error al reembolsar: ' + (err.mensaje ?? err.error ?? 'Error desconocido'));
+            return;
+          }
+        }
+      }
+
+      // Cancelar el pedido (restaura stock)
       const response = await fetch(
-        `http://localhost/sales-api/public/pedidos/${pedidoId}/cancelar`,
+        `${API}/pedidos/${pedidoId}/cancelar`,
         { method: 'PATCH' }
       );
       const data = await response.json();
@@ -150,9 +172,14 @@ export default function Orders() {
                       {pedido.estatus}
                     </span>
                     <p className="text-xl font-bold text-indigo-600">${pedido.total?.toFixed(2)}</p>
-                    {pedido.estatus?.toLowerCase() !== 'cancelado' && (
+                    {pedido.estatus?.toLowerCase() === 'pendiente' && (
+                      <span className="px-3 py-1 text-sm bg-yellow-50 text-yellow-700 border border-yellow-200 rounded-lg">
+                        Procesando pago...
+                      </span>
+                    )}
+                    {pedido.estatus?.toLowerCase() === 'pagado' && (
                       <button
-                        onClick={() => cancelarPedido(pedido.id)}
+                        onClick={() => cancelarPedido(pedido.id, pedido.estatus)}
                         disabled={cancelando === pedido.id}
                         className="px-3 py-1 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                       >
