@@ -21,7 +21,23 @@ export default function CheckoutModal({ total, cart, usuario, onClose }) {
   const [exito, setExito] = useState(false);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === "numero") {
+      // Solo dígitos, máx 16, con espacios cada 4
+      const digits = value.replace(/\D/g, "").slice(0, 16);
+      const formatted = digits.replace(/(.{4})/g, "$1-").replace(/-$/, "");
+      setForm({ ...form, numero: formatted });
+      return;
+    }
+
+    if (name === "mes" || name === "anio" || name === "cvv") {
+      // Solo dígitos
+      setForm({ ...form, [name]: value.replace(/\D/g, "") });
+      return;
+    }
+
+    setForm({ ...form, [name]: value });
   };
 
   const handlePagar = async (e) => {
@@ -143,7 +159,7 @@ export default function CheckoutModal({ total, cart, usuario, onClose }) {
                 name="numero"
                 value={form.numero}
                 onChange={handleChange}
-                placeholder="4111 1111 1111 1111"
+                placeholder="4111-1111-1111-1111"
                 maxLength={19}
                 required
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-mono"
