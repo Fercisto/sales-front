@@ -87,7 +87,7 @@ export default function Orders() {
 
       if (response.ok) {
         setPedidos(pedidos.map(p =>
-          p.id === pedidoId ? { ...p, estatus: 'CANCELADO' } : p
+          p.id === pedidoId ? { ...p, estatus: 'Cancelado' } : p
         ));
       } else {
         alert(data.error || 'Error al cancelar');
