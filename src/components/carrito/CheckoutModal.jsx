@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 
-const CONEKTA_PUBLIC_KEY = "key_H9DhTiiH3VqTjInPvkUP9gm";
-const API_URL = "http://localhost/sales-api/public";
+const CONEKTA_PUBLIC_KEY = import.meta.env.VITE_CONEKTA_PUBLIC_KEY;
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function CheckoutModal({ total, cart, usuario, onClose }) {
   const navigate = useNavigate();
@@ -104,7 +104,15 @@ export default function CheckoutModal({ total, cart, usuario, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md relative">
+
+        {/* Spinner overlay mientras procesa */}
+        {procesando && (
+          <div className="absolute inset-0 bg-white/80 rounded-xl flex flex-col items-center justify-center z-10 gap-3">
+            <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+            <p className="text-indigo-700 font-semibold text-sm">Procesando pago...</p>
+          </div>
+        )}
 
         {/* Header */}
         <div className="flex justify-between items-center p-5 border-b">
