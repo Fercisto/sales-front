@@ -1,0 +1,86 @@
+import { Link } from "react-router-dom"
+import Logo from "../common/Logo"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faShoppingCart, faClipboardList, faChartBar } from '@fortawesome/free-solid-svg-icons'
+import { useAuth } from "../../hooks/useAuth"
+
+export default function Navbar() {
+  const { usuario, logout, estaAutenticado } = useAuth();
+  const esAdmin = usuario?.rol === 'admin';
+
+  return (
+    <nav className="border-b border-gray-200 backdrop-blur-sm bg-white mb-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="flex justify-between items-center h-16">
+          <div className="flex items-center">
+            <Logo size="2xl" />
+          </div>
+
+          <div className="flex items-center gap-4">
+            {estaAutenticado() ? (
+              <>
+                <span className="text-gray-700 font-medium">
+                  Hola, {usuario?.nombre}
+                  {esAdmin && (
+                    <span className="ml-2 text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-semibold">
+                      Admin
+                    </span>
+                  )}
+                </span>
+
+                {esAdmin ? (
+                  <Link
+                    to="/admin"
+                    className="relative inline-flex items-center gap-2 text-indigo-600 font-medium px-4 py-2.5 rounded-lg bg-indigo-50 hover:bg-indigo-100"
+                  >
+                    <FontAwesomeIcon icon={faChartBar} className="text-lg" />
+                    <span>Panel Admin</span>
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      to="/pedidos"
+                      className="relative inline-flex items-center gap-2 text-indigo-600 font-medium px-4 py-2.5 rounded-lg bg-indigo-50 hover:bg-indigo-100"
+                    >
+                      <FontAwesomeIcon icon={faClipboardList} className="text-lg" />
+                      <span>Pedidos</span>
+                    </Link>
+                    <Link
+                      to="/carrito"
+                      className="relative inline-flex items-center gap-2 text-indigo-600 font-medium px-4 py-2.5 rounded-lg bg-indigo-50 hover:bg-indigo-100"
+                    >
+                      <FontAwesomeIcon icon={faShoppingCart} className="text-lg" />
+                      <span>Carrito</span>
+                    </Link>
+                  </>
+                )}
+
+                <button
+                  onClick={logout}
+                  className="bg-red-600 hover:bg-red-700 text-white font-medium px-6 py-2.5 rounded-lg cursor-pointer"
+                >
+                  Cerrar Sesión
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="text-gray-700 hover:text-black font-medium transition-colors px-6 py-2.5 rounded-lg hover:bg-gray-50"
+                >
+                  Iniciar Sesión
+                </Link>
+                <Link
+                  to="/register"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2.5 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                  Crear Cuenta
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </nav>
+  )
+}
